@@ -18,7 +18,24 @@ class Utils:
     for i in _array:
       print(i)
 
+  def drawGraph(graph, posDict, path, nq, eq):
+    # PRINT GRAPH
+    G = nx.Graph()
+    G.add_nodes_from(posDict.keys())
 
+    color_map = []
+    for node in G:
+      if node in path:
+        color_map.append('red')
+      else:
+        color_map.append('blue')
+
+    for i in range(nq):
+      for j in range(eq):
+        G.add_edge(i, graph[i].indices[j])
+
+    nx.draw(G, posDic, node_color=color_map, with_labels=False)
+    plt.show()
   
 
 # BUSCA POR PROFUNDIDADE (DFS) #
@@ -140,20 +157,4 @@ print("---------------------------------------")
 final_path = DFS.DFS(grp, start, goal)
 #BFS.BFS(grp,start, goal)
 
-
-# PRINT GRAPH
-G = nx.Graph()
-G.add_nodes_from(posDic.keys())
-
-color_map = []
-for node in G:
-  if node in final_path:
-    color_map.append('red')
-  else:
-    color_map.append('cyan')
-
-for i in range(nodeQuantity):
-  for j in range(edgeQuantity):
-    G.add_edge(i, grp[i].indices[j])
-nx.draw(G, posDic, node_color=color_map, with_labels=True)
-plt.show()
+Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
