@@ -1,10 +1,13 @@
-from collections import defaultdict
+from collections import Counter, defaultdict
 from random import SystemRandom
+from networkx import linalg
 from sklearn.neighbors import NearestNeighbors
 from sklearn.neighbors import kneighbors_graph
 import matplotlib.pyplot as plt
 import networkx as nx
 from pyvis.network import Network
+from math import dist
+from operator import itemgetter
 
 class Utils:
   def generateArray(minV, maxV, k):
@@ -44,6 +47,9 @@ class Utils:
     nx.draw(G, posDic, node_color=color_map, with_labels=False, node_size=50)
     plt.show()
   
+  def calcDistance(n1, n2):
+    return dist(n1, n2)
+  
 
 # BUSCA POR PROFUNDIDADE (DFS) #
 class DFS:
@@ -54,6 +60,7 @@ class DFS:
 
     while stack:
       node = stack.pop()
+
       if node == goal:
         print("Goal achievid!")
         goal_flag = True
@@ -68,6 +75,7 @@ class DFS:
     
     #print(path)
     if(goal_flag):
+      print("Nº de nos visitado: ", len(path))
       return path
 
 # BUSCA POR LARGURA (BFS) #
@@ -97,6 +105,7 @@ class BFS:
         for i in range(size):
           if(visited[i] == True):
             path.append(i)
+        print("Nº de nos visitado: ", len(path))
         return path
 
       for i in graph[s].indices:
@@ -113,46 +122,55 @@ class BestFirst:
 
 
   # A & A* #
+
 class aStar:
-  def aStrar(graph, start, goal):
-    closed = []
-    open = []
-    path = {}
-    path[start] = start
-    open.append(start)
+  def aStrar(graph, nodePosList, start, goal):
+    
+    nodeDistList = []
+    for i in range(len(nodePosList)):
+      nodeDistList.append(Utils.calcDistance(nodePosList[i], nodePosList[goal]))
 
-    while open:
-      current_node = open.pop(0)
-      closed.append(current_node)
+    open_list = [{
+      'index': 0,
+      'g': 0,
+      'h': nodeDistList[start],
+      'f': 0,
+      'path': [start]
+    }]
+    closed_list = []
 
-      if current_node == goal:
-        reconst_path = []
-        while current_node != start:
-          reconst_path.append(current_node)
-          current_node = path[current_node]
-        reconst_path.append(start)
-        reconst_path.reverse()
-        return reconst_path
+    while len(open_list) > 0:
+      current_node = open_list.pop(0)
+      closed_list.append(current_node['index'])
+      
+      x = current_node['index']
+      # Found the goal
+      if current_node['index'] == goal:
+        return current_node['path']
+    
 
-      for neighbor in graph[current_node].indices:
-        if neighbor not in open and neighbor not in closed:
-          open.add(neighbor)
-          path[neighbor] = current_node
-        else:
-          if neighbor in closed:
-            closed.remove(neighbor)
-            open.add(neighbor)
-
-      open.remove(current_node)
-      closed.add(current_node)
+      for neighbor in graph[current_node['index']].indices:
+        if neighbor not in closed_list:
+          nodeDict = {
+            'index': neighbor,
+            'g': current_node['g'] + dist(nodePosList[current_node['index']], nodePosList[neighbor]),
+            'h': nodeDistList[neighbor],
+            'f': 0,
+            'path': current_node['path']+[neighbor]
+          }
+          nodeDict['f'] = nodeDict['g']+nodeDict['h']
+          open_list.append(nodeDict)
+          open_list = sorted(open_list, key=itemgetter('f'))
+    
     return None
+
 
 
 ######### VARIAVEIS #############
 coordMinValue = 1
 coordMaxValue = 501
 nodeQuantity = 500
-edgeQuantity = 5
+edgeQuantity = 3
 start = 0
 goal = 499
 
@@ -171,9 +189,13 @@ for node in coordinatesArray:
 grp = kneighbors_graph(coordinatesArray, edgeQuantity, mode='distance', p=2)
 print(coordinatesArray[0], coordinatesArray[499])
 print("---------------------------------------")
+final_path = False
 
 final_path = DFS.DFS(grp, start, goal)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
 
 final_path = BFS.BFS(grp, start, goal, nodeQuantity)
+if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
+
+final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
