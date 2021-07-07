@@ -62,7 +62,7 @@ class DFS:
       node = stack.pop()
 
       if node == goal:
-        print("Goal achievid!")
+        print("===== Achou =====")
         goal_flag = True
         path.append(node)
         break
@@ -75,7 +75,7 @@ class DFS:
     
     #print(path)
     if(goal_flag):
-      print("Nº de nos visitado: ", len(path))
+      print("DFS - Nº de nos visitado: ", len(path))
       return path
 
 # BUSCA POR LARGURA (BFS) #
@@ -99,13 +99,13 @@ class BFS:
       s = queue.pop(0) 
       #print(s, " ")  
       if s == final :
-        print("===== Achou=====")
+        print("===== Achou =====")
         queue.append(s)
         #print(queue)
         for i in range(size):
           if(visited[i] == True):
             path.append(i)
-        print("Nº de nos visitado: ", len(path))
+        print("BFS - Nº de nos visitado: ", len(path))
         return path
 
       for i in graph[s].indices:
@@ -146,6 +146,8 @@ class aStar:
       x = current_node['index']
       # Found the goal
       if current_node['index'] == goal:
+        print("===== Achou =====")
+        print("A* - Nº de nos visitado: ", len(current_node['path']))
         return current_node['path']
     
 
@@ -163,7 +165,6 @@ class aStar:
           open_list = sorted(open_list, key=itemgetter('f'))
     
     return None
-
 
 
 ######### VARIAVEIS #############
