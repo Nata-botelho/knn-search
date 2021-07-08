@@ -1,5 +1,7 @@
+import bisect
 from collections import Counter, defaultdict
 from random import SystemRandom
+import networkx as nx
 from networkx import linalg
 from sklearn.neighbors import NearestNeighbors
 from sklearn.neighbors import kneighbors_graph
@@ -32,7 +34,7 @@ class Utils:
     # PRINT GRAPH
     G = nx.Graph()
     G.add_nodes_from(posDict.keys())
-    
+
     color_map = []
     for node in G:
       if node in path:
@@ -46,14 +48,14 @@ class Utils:
 
     nx.draw(G, posDic, node_color=color_map, with_labels=False, node_size=50)
     plt.show()
-  
+
   def calcDistance(n1, n2):
     return dist(n1, n2)
   
 
 # BUSCA POR PROFUNDIDADE (DFS) #
 class DFS:
-  
+
   def DFS(graph, start, goal):
     stack, path = [start], []
     goal_flag = False
@@ -72,7 +74,7 @@ class DFS:
       #print("i: ",node, graph[node].indices)
       for neighbor in graph[node].indices:
         stack.append(neighbor)
-    
+
     #print(path)
     if(goal_flag):
       print("DFS - Nº de nos visitado: ", len(path))
@@ -81,27 +83,24 @@ class DFS:
 # BUSCA POR LARGURA (BFS) #
 class BFS:
 
-  def BFS(graph, s, final, size): 
+  def BFS(graph, s, final, size):
     #marca todos os vértices como não visitados.
-    visited = [False] * size   
-
-    #cria uma fila vazia para o BFS 
-    queue = [] 
+    visited = [False] * size
+    #cria uma fila vazia para o BFS
+    queue = []
     path = []
-  
     #pega o nó de origem, marca como visitado e insere ele na fila
     queue.append(s)
-    visited[s] = True 
-    
+    visited[s] = True
     #enquanto a fila não for vazia
-    while queue:  
+    while queue:
       #retira o último vértice inserido na fila e imprime
-      s = queue.pop(0) 
-      #print(s, " ")  
+      s = queue.pop(0)
+      #print(s, " ")
       if s == final :
         print("===== Achou =====")
         queue.append(s)
-        #print(queue)
+       # print(queue)
         for i in range(size):
           if(visited[i] == True):
             path.append(i)
@@ -109,17 +108,43 @@ class BFS:
         return path
 
       for i in graph[s].indices:
-        if visited[i] == False: 
-          queue.append(i) 
+        if visited[i] == False:
+          queue.append(i)
           visited[i] = True
           #print(queue)
-  
-  # BUSCA BEST FIRST #
-class BestFirst:
-    def BestFirst(graph, start, goal):
-        
-        return 
 
+
+# BUSCA BEST FIRST #
+class BestFirst:
+    def BestFirst(graph,nodeList,start,goal ):
+
+      open_list = [{
+        'index': 0,
+        'h': 0,
+        'path': [start]
+      }]
+      closed_list = []
+
+      while len(open_list) > 0:
+        current_node = open_list.pop(0)
+        closed_list.append(current_node['index'])
+        # Found the goal
+        if current_node['index'] == goal:
+          print("===== Achou =====")
+          print("A* - Nº de nos visitado: ", len(current_node['path']))
+          return current_node['path']
+
+        for neighbor in graph[current_node['index']].indices:
+          if neighbor not in closed_list:
+            nodeDict = {
+              'index': neighbor,
+              'h': dist(nodeList[current_node['index']],nodeList[neighbor]),
+              'path': current_node['path'] + [neighbor]
+            }
+            open_list.append(nodeDict)
+            open_list = sorted(open_list, key=itemgetter('h'))
+
+      return None
 
   # A & A* #
 
@@ -149,7 +174,6 @@ class aStar:
         print("===== Achou =====")
         print("A* - Nº de nos visitado: ", len(current_node['path']))
         return current_node['path']
-    
 
       for neighbor in graph[current_node['index']].indices:
         if neighbor not in closed_list:
@@ -171,7 +195,7 @@ class aStar:
 coordMinValue = 1
 coordMaxValue = 501
 nodeQuantity = 500
-edgeQuantity = 3
+edgeQuantity = 5
 start = 0
 goal = 499
 
@@ -192,6 +216,10 @@ print(coordinatesArray[0], coordinatesArray[499])
 print("---------------------------------------")
 final_path = False
 
+# print("aqui ")
+# nbrs = NearestNeighbors(n_neighbors=nodeQuantity).fit(grp)
+# distances, indices = nbrs.kneighbors(grp)
+
 final_path = DFS.DFS(grp, start, goal)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
 
@@ -200,3 +228,7 @@ if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQu
 
 final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
+
+final_path = BestFirst.BestFirst(grp,coordinatesArray,start,goal)
+if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
+
