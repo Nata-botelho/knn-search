@@ -1,7 +1,6 @@
-import bisect
 from collections import Counter, defaultdict
 from random import SystemRandom
-import networkx as nx
+from time import struct_time
 from networkx import linalg
 from sklearn.neighbors import NearestNeighbors
 from sklearn.neighbors import kneighbors_graph
@@ -10,6 +9,7 @@ import networkx as nx
 from pyvis.network import Network
 from math import dist
 from operator import itemgetter
+import time
 
 class Utils:
   def generateArray(minV, maxV, k):
@@ -83,24 +83,27 @@ class DFS:
 # BUSCA POR LARGURA (BFS) #
 class BFS:
 
-  def BFS(graph, s, final, size):
+  def BFS(graph, s, final, size): 
     #marca todos os vértices como não visitados.
-    visited = [False] * size
-    #cria uma fila vazia para o BFS
-    queue = []
+    visited = [False] * size   
+
+    #cria uma fila vazia para o BFS 
+    queue = [] 
     path = []
+  
     #pega o nó de origem, marca como visitado e insere ele na fila
     queue.append(s)
-    visited[s] = True
+    visited[s] = True 
+    
     #enquanto a fila não for vazia
-    while queue:
+    while queue:  
       #retira o último vértice inserido na fila e imprime
-      s = queue.pop(0)
-      #print(s, " ")
+      s = queue.pop(0) 
+      #print(s, " ")  
       if s == final :
         print("===== Achou =====")
         queue.append(s)
-       # print(queue)
+        #print(queue)
         for i in range(size):
           if(visited[i] == True):
             path.append(i)
@@ -108,13 +111,12 @@ class BFS:
         return path
 
       for i in graph[s].indices:
-        if visited[i] == False:
-          queue.append(i)
+        if visited[i] == False: 
+          queue.append(i) 
           visited[i] = True
           #print(queue)
-
-
-# BUSCA BEST FIRST #
+  
+  # BUSCA BEST FIRST #
 class BestFirst:
     def BestFirst(graph,nodeList,start,goal ):
 
@@ -147,6 +149,42 @@ class BestFirst:
       return None
 
   # A & A* #
+class aCommon:
+  def aCommon(graph, start, goal):
+
+    open_list = [{
+      'index': 0,
+      'path': [start]
+    }]
+    closed_list = []
+
+    visit = []
+    visit.append(start)
+
+    while len(open_list) > 0:
+      current_node = open_list.pop(0)
+      closed_list.append(current_node['index'])
+
+      x = current_node['index']
+      visit.append(x)
+      # Found the goal
+      if current_node['index'] == goal:
+        print("===== Achou =====")
+        #print("A - Nº de nos visitado: ", len(current_node['path']))
+        #return current_node['path']
+        print("A - Nº de nos visitado: ", len(visit))
+        return visit
+
+
+      for neighbor in graph[current_node['index']].indices:
+        if neighbor not in closed_list:
+          nodeDict = {
+            'index': neighbor,
+            'path': current_node['path']+[neighbor]
+          }
+          open_list.append(nodeDict)
+
+    return None
 
 class aStar:
   def aStrar(graph, nodePosList, start, goal):
@@ -164,16 +202,24 @@ class aStar:
     }]
     closed_list = []
 
+    visit = []
+    visit.append(start)
+
     while len(open_list) > 0:
       current_node = open_list.pop(0)
       closed_list.append(current_node['index'])
       
       x = current_node['index']
+      visit.append(x)
+
       # Found the goal
       if current_node['index'] == goal:
         print("===== Achou =====")
-        print("A* - Nº de nos visitado: ", len(current_node['path']))
-        return current_node['path']
+        #print("A* - Nº de nos visitado: ", len(current_node['path']))
+        #return current_node['path']
+        print("A - Nº de nos visitado: ", len(visit))
+        return visit
+
 
       for neighbor in graph[current_node['index']].indices:
         if neighbor not in closed_list:
@@ -216,17 +262,30 @@ print(coordinatesArray[0], coordinatesArray[499])
 print("---------------------------------------")
 final_path = False
 
-# print("aqui ")
-# nbrs = NearestNeighbors(n_neighbors=nodeQuantity).fit(grp)
-# distances, indices = nbrs.kneighbors(grp)
 
-final_path = DFS.DFS(grp, start, goal)
+
+start_time = time.time()
+#final_path = DFS.DFS(grp, start, goal)
+end_time = time.time()
+print("DFS: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
 
-final_path = BFS.BFS(grp, start, goal, nodeQuantity)
+start_time = time.time()
+#final_path = BFS.BFS(grp, start, goal, nodeQuantity)
+end_time = time.time()
+print("BFS: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
 
-final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
+start_time = time.time()
+#final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
+end_time = time.time()
+print("A*: ", end_time - start_time)
+if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
+
+start_time = time.time()
+#final_path = aCommon.aCommon(grp, start, goal)
+end_time = time.time()
+print("A: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
 
 final_path = BestFirst.BestFirst(grp,coordinatesArray,start,goal)
