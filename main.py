@@ -1,5 +1,6 @@
 from collections import Counter, defaultdict
 from random import SystemRandom
+from time import struct_time
 from networkx import linalg
 from sklearn.neighbors import NearestNeighbors
 from sklearn.neighbors import kneighbors_graph
@@ -8,6 +9,7 @@ import networkx as nx
 from pyvis.network import Network
 from math import dist
 from operator import itemgetter
+import time
 
 class Utils:
   def generateArray(minV, maxV, k):
@@ -122,6 +124,42 @@ class BestFirst:
 
 
   # A & A* #
+class aCommon:
+  def aCommon(graph, start, goal):
+
+    open_list = [{
+      'index': 0,
+      'path': [start]
+    }]
+    closed_list = []
+
+    visit = []
+    visit.append(start)
+
+    while len(open_list) > 0:
+      current_node = open_list.pop(0)
+      closed_list.append(current_node['index'])
+      
+      x = current_node['index']
+      visit.append(x)
+      # Found the goal
+      if current_node['index'] == goal:
+        print("===== Achou =====")
+        #print("A - Nº de nos visitado: ", len(current_node['path']))
+        #return current_node['path']
+        print("A - Nº de nos visitado: ", len(visit))
+        return visit
+    
+
+      for neighbor in graph[current_node['index']].indices:
+        if neighbor not in closed_list:
+          nodeDict = {
+            'index': neighbor,
+            'path': current_node['path']+[neighbor]
+          }
+          open_list.append(nodeDict)
+    
+    return None
 
 class aStar:
   def aStrar(graph, nodePosList, start, goal):
@@ -139,16 +177,23 @@ class aStar:
     }]
     closed_list = []
 
+    visit = []
+    visit.append(start)
+
     while len(open_list) > 0:
       current_node = open_list.pop(0)
       closed_list.append(current_node['index'])
       
       x = current_node['index']
+      visit.append(x)
+
       # Found the goal
       if current_node['index'] == goal:
         print("===== Achou =====")
-        print("A* - Nº de nos visitado: ", len(current_node['path']))
-        return current_node['path']
+        #print("A* - Nº de nos visitado: ", len(current_node['path']))
+        #return current_node['path']
+        print("A - Nº de nos visitado: ", len(visit))
+        return visit
     
 
       for neighbor in graph[current_node['index']].indices:
@@ -171,7 +216,7 @@ class aStar:
 coordMinValue = 1
 coordMaxValue = 501
 nodeQuantity = 500
-edgeQuantity = 3
+edgeQuantity = 5
 start = 0
 goal = 499
 
@@ -192,11 +237,31 @@ print(coordinatesArray[0], coordinatesArray[499])
 print("---------------------------------------")
 final_path = False
 
-final_path = DFS.DFS(grp, start, goal)
+x = grp[0].indices[0]
+print(x)
+print(grp[0])
+print(grp[0, x])
+
+start_time = time.time()
+#final_path = DFS.DFS(grp, start, goal)
+end_time = time.time()
+print("DFS: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
 
-final_path = BFS.BFS(grp, start, goal, nodeQuantity)
+start_time = time.time()
+#final_path = BFS.BFS(grp, start, goal, nodeQuantity)
+end_time = time.time()
+print("BFS: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
 
-final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
+start_time = time.time()
+#final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
+end_time = time.time()
+print("A*: ", end_time - start_time)
+if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
+
+start_time = time.time()
+#final_path = aCommon.aCommon(grp, start, goal)
+end_time = time.time()
+print("A: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
