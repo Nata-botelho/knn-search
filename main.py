@@ -1,12 +1,7 @@
-from collections import Counter, defaultdict
 from random import SystemRandom
-from time import struct_time
-from networkx import linalg
-from sklearn.neighbors import NearestNeighbors
 from sklearn.neighbors import kneighbors_graph
 import matplotlib.pyplot as plt
 import networkx as nx
-from pyvis.network import Network
 from math import dist
 from operator import itemgetter
 import time
@@ -27,7 +22,7 @@ class Utils:
     if(final_path):
       return True
     else:
-      print("BFS: Caminho não encontrado")
+      print("Caminho não encontrado")
       return False
 
   def drawGraph(graph, posDict, path, nq, eq):
@@ -68,14 +63,14 @@ class DFS:
         goal_flag = True
         path.append(node)
         break
+
       if node in path:
         continue
       path.append(node)
-      #print("i: ",node, graph[node].indices)
+
       for neighbor in graph[node].indices:
         stack.append(neighbor)
 
-    #print(path)
     if(goal_flag):
       print("DFS - Nº de nos visitado: ", len(path))
       return path
@@ -99,11 +94,10 @@ class BFS:
     while queue:  
       #retira o último vértice inserido na fila e imprime
       s = queue.pop(0) 
-      #print(s, " ")  
+ 
       if s == final :
         print("===== Achou =====")
         queue.append(s)
-        #print(queue)
         for i in range(size):
           if(visited[i] == True):
             path.append(i)
@@ -114,7 +108,6 @@ class BFS:
         if visited[i] == False: 
           queue.append(i) 
           visited[i] = True
-          #print(queue)
   
   # BUSCA BEST FIRST #
 class BestFirst:
@@ -133,7 +126,7 @@ class BestFirst:
         # Found the goal
         if current_node['index'] == goal:
           print("===== Achou =====")
-          print("A* - Nº de nos visitado: ", len(current_node['path']))
+          print("Best First - Nº de nos visitado: ", len(current_node['path']))
           return current_node['path']
 
         for neighbor in graph[current_node['index']].indices:
@@ -217,7 +210,7 @@ class aStar:
         print("===== Achou =====")
         #print("A* - Nº de nos visitado: ", len(current_node['path']))
         #return current_node['path']
-        print("A - Nº de nos visitado: ", len(visit))
+        print("A* - Nº de nos visitado: ", len(visit))
         return visit
 
 
@@ -262,8 +255,6 @@ print(coordinatesArray[0], coordinatesArray[499])
 print("---------------------------------------")
 final_path = False
 
-
-
 start_time = time.time()
 #final_path = DFS.DFS(grp, start, goal)
 end_time = time.time()
@@ -277,9 +268,9 @@ print("BFS: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
 
 start_time = time.time()
-#final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
+#final_path = BestFirst.BestFirst(grp, coordinatesArray, start, goal)
 end_time = time.time()
-print("A*: ", end_time - start_time)
+print("Best First: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
 
 start_time = time.time()
@@ -288,6 +279,8 @@ end_time = time.time()
 print("A: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
 
-final_path = BestFirst.BestFirst(grp,coordinatesArray,start,goal)
+start_time = time.time()
+#final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
+end_time = time.time()
+print("A*: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
-
