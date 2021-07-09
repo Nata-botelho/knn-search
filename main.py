@@ -6,7 +6,9 @@ from math import dist
 from operator import itemgetter
 import time
 
+# FUNÇÕES COM UTILITÁRIOS PRO CÓDIGO #
 class Utils:
+  # CRIA UM ARRAY DE 'k' COORDENADAS ALEATÓRIAS #
   def generateArray(minV, maxV, k):
     coordinatesArray = []
     random = SystemRandom()
@@ -14,10 +16,7 @@ class Utils:
       coordinatesArray.append((random.randint(minV, maxV), random.randint(minV, maxV)))
     return coordinatesArray
 
-  def printArray(_array):
-    for i in _array:
-      print(i)
-
+  # CHECA SE UM CAMINHO FOI ENCONTRADO E RETORNA RESULTADO #
   def checkPath(path):
     if(final_path):
       return True
@@ -25,8 +24,8 @@ class Utils:
       print("Caminho não encontrado")
       return False
 
-  def drawGraph(graph, posDict, path, nq, eq):
-    # PRINT GRAPH
+  # DESENHA O GRAFO E CAMINHO NA TELA #
+  def drawGraph(graph, posDict, path, nq, eq, algorithmName):
     G = nx.Graph()
     G.add_nodes_from(posDict.keys())
 
@@ -42,7 +41,9 @@ class Utils:
         G.add_edge(i, graph[i].indices[j])
 
     nx.draw(G, posDic, node_color=color_map, with_labels=False, node_size=50)
-    plt.show()
+    #plt.show()
+    print(algorithmName+"_Graph.png")
+    plt.savefig(algorithmName+"_Graph.png", format="PNG")
 
   def calcDistance(n1, n2):
     return dist(n1, n2)
@@ -233,7 +234,7 @@ class aStar:
 ######### VARIAVEIS #############
 coordMinValue = 1
 coordMaxValue = 501
-nodeQuantity = 500
+nodeQuantity = 10000
 edgeQuantity = 5
 start = 0
 goal = 499
@@ -256,31 +257,31 @@ print("---------------------------------------")
 final_path = False
 
 start_time = time.time()
-#final_path = DFS.DFS(grp, start, goal)
+final_path = DFS.DFS(grp, start, goal)
 end_time = time.time()
 print("DFS: ", end_time - start_time)
-if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
+if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "DFS")
 
 start_time = time.time()
-#final_path = BFS.BFS(grp, start, goal, nodeQuantity)
+final_path = BFS.BFS(grp, start, goal, nodeQuantity)
 end_time = time.time()
 print("BFS: ", end_time - start_time)
-if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
+if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "BFS")
 
 start_time = time.time()
-#final_path = BestFirst.BestFirst(grp, coordinatesArray, start, goal)
+final_path = BestFirst.BestFirst(grp, coordinatesArray, start, goal)
 end_time = time.time()
 print("Best First: ", end_time - start_time)
-if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
+if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "BestFirst")
 
 start_time = time.time()
-#final_path = aCommon.aCommon(grp, start, goal)
+final_path = aCommon.aCommon(grp, start, goal)
 end_time = time.time()
 print("A: ", end_time - start_time)
-if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
+if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "A")
 
 start_time = time.time()
-#final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
+final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
 end_time = time.time()
 print("A*: ", end_time - start_time)
-if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity)
+if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "AStar")
