@@ -2,10 +2,10 @@
 
 Para execução dos código é necessária instalação das bibliotecas utilizadas, as mesmas podem ser instaladas com os comandos:
 
-pip install -U scikit-learn
-pip install matplotlib
-pip install networkx
-pip install math
+pip install -U scikit-learn  
+pip install matplotlib  
+pip install networkx  
+pip install math  
 
 Para execução do código é necessário estar na pasta do projeto e executar o comando:
 
