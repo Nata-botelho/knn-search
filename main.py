@@ -228,11 +228,12 @@ class aStar:
 
 ######### VARIAVEIS #############
 coordMinValue = 1
-coordMaxValue = 501
-nodeQuantity = 500
-edgeQuantity = 5
+nodeQuantity = int(input("Insira a quantidade de vértices: \n"))
+edgeQuantity = int(input("Insira a quantidade de arestas: \n"))
 start = 0
-goal = 499
+goal = nodeQuantity-1
+print(goal)
+coordMaxValue = nodeQuantity+1
 
 ######### CRIAR ARRAY DE NOS ####
 coordinatesArray = Utils.generateArray(coordMinValue, coordMaxValue, nodeQuantity)
