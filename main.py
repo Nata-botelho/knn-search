@@ -40,10 +40,10 @@ class Utils:
       for j in range(eq):
         G.add_edge(i, graph[i].indices[j])
 
-    nx.draw(G, posDic, node_color=color_map, with_labels=False, node_size=50)
-    #plt.show()
     print(algorithmName+"_Graph.png")
+    nx.draw(G, posDic, node_color=color_map, with_labels=False, node_size=20)
     plt.savefig(algorithmName+"_Graph.png", format="PNG")
+    plt.close()
 
   def calcDistance(n1, n2):
     return dist(n1, n2)
@@ -58,6 +58,7 @@ class DFS:
 
     while stack:
       node = stack.pop()
+      #path.append(node)
 
       if node == goal:
         print("===== Achou =====")
@@ -102,7 +103,7 @@ class BFS:
         for i in range(size):
           if(visited[i] == True):
             path.append(i)
-        print("BFS - Nº de nos visitado: ", len(path))
+        print("BFS - Tamanho do caminho: ", len(path))
         return path
 
       for i in graph[s].indices:
@@ -127,7 +128,7 @@ class BestFirst:
         # Found the goal
         if current_node['index'] == goal:
           print("===== Achou =====")
-          print("Best First - Nº de nos visitado: ", len(current_node['path']))
+          print("Best First - Tamanho do caminho: ", len(current_node['path']))
           return current_node['path']
 
         for neighbor in graph[current_node['index']].indices:
@@ -164,11 +165,8 @@ class aCommon:
       # Found the goal
       if current_node['index'] == goal:
         print("===== Achou =====")
-        #print("A - Nº de nos visitado: ", len(current_node['path']))
-        #return current_node['path']
-        print("A - Nº de nos visitado: ", len(visit))
-        return visit
-
+        print("A - Tamanho do caminho: ", len(current_node['path']))
+        return current_node['path']
 
       for neighbor in graph[current_node['index']].indices:
         if neighbor not in closed_list:
@@ -209,10 +207,8 @@ class aStar:
       # Found the goal
       if current_node['index'] == goal:
         print("===== Achou =====")
-        #print("A* - Nº de nos visitado: ", len(current_node['path']))
-        #return current_node['path']
-        print("A* - Nº de nos visitado: ", len(visit))
-        return visit
+        print("A* - Tamanho do caminho: ", len(current_node['path']))
+        return current_node['path']
 
 
       for neighbor in graph[current_node['index']].indices:
@@ -234,8 +230,8 @@ class aStar:
 ######### VARIAVEIS #############
 coordMinValue = 1
 coordMaxValue = 501
-nodeQuantity = 10000
-edgeQuantity = 5
+nodeQuantity = 500
+edgeQuantity = 3
 start = 0
 goal = 499
 
@@ -254,7 +250,8 @@ for node in coordinatesArray:
 grp = kneighbors_graph(coordinatesArray, edgeQuantity, mode='distance', p=2)
 print(coordinatesArray[0], coordinatesArray[499])
 print("---------------------------------------")
-final_path = False
+final_path = []
+Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "sample")
 
 start_time = time.time()
 final_path = DFS.DFS(grp, start, goal)
@@ -275,13 +272,13 @@ print("Best First: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "BestFirst")
 
 start_time = time.time()
-final_path = aCommon.aCommon(grp, start, goal)
-end_time = time.time()
-print("A: ", end_time - start_time)
-if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "A")
-
-start_time = time.time()
 final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
 end_time = time.time()
 print("A*: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "AStar")
+
+start_time = time.time()
+final_path = aCommon.aCommon(grp, start, goal)
+end_time = time.time()
+print("A: ", end_time - start_time)
+if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "A")
