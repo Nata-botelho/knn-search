@@ -47,7 +47,6 @@ class Utils:
 
   def calcDistance(n1, n2):
     return dist(n1, n2)
-  
 
 # BUSCA POR PROFUNDIDADE (DFS) #
 class DFS:
@@ -58,7 +57,6 @@ class DFS:
 
     while stack:
       node = stack.pop()
-      #path.append(node)
 
       if node == goal:
         print("===== Achou =====")
@@ -185,6 +183,7 @@ class aStar:
     for i in range(len(nodePosList)):
       nodeDistList.append(Utils.calcDistance(nodePosList[i], nodePosList[goal]))
 
+    # LISTA COM A ESTRUTURA DOS NÓS UTILIZADA PELO A* #
     open_list = [{
       'index': 0,
       'g': 0,
@@ -198,9 +197,10 @@ class aStar:
     visit.append(start)
 
     while len(open_list) > 0:
+      
       current_node = open_list.pop(0)
       closed_list.append(current_node['index'])
-      
+
       x = current_node['index']
       visit.append(x)
 
@@ -209,7 +209,7 @@ class aStar:
         print("===== Achou =====")
         print("A* - Tamanho do caminho: ", len(current_node['path']))
         return current_node['path']
-
+        #return visit
 
       for neighbor in graph[current_node['index']].indices:
         if neighbor not in closed_list:
@@ -226,20 +226,19 @@ class aStar:
     
     return None
 
-
 ######### VARIAVEIS #############
 coordMinValue = 1
 coordMaxValue = 501
 nodeQuantity = 500
-edgeQuantity = 3
+edgeQuantity = 5
 start = 0
 goal = 499
 
 ######### CRIAR ARRAY DE NOS ####
-print("=======================================")
 coordinatesArray = Utils.generateArray(coordMinValue, coordMaxValue, nodeQuantity)
 #Utils.printArray(coordinatesArray)
 
+######### CRIAR DICIONARIO DE POSICOES ####
 posDic = {}
 i=0
 for node in coordinatesArray:
@@ -248,35 +247,38 @@ for node in coordinatesArray:
 
 ######### MONTAGEM DO GRAFO #####
 grp = kneighbors_graph(coordinatesArray, edgeQuantity, mode='distance', p=2)
-print(coordinatesArray[0], coordinatesArray[499])
-print("---------------------------------------")
 final_path = []
 Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "sample")
 
+######### EXECUCAO DFS ##########
 start_time = time.time()
 final_path = DFS.DFS(grp, start, goal)
 end_time = time.time()
 print("DFS: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "DFS")
 
+######### EXECUCAO BFS ##########
 start_time = time.time()
 final_path = BFS.BFS(grp, start, goal, nodeQuantity)
 end_time = time.time()
 print("BFS: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "BFS")
 
+######### EXECUCAO BEST FIRST ##########
 start_time = time.time()
 final_path = BestFirst.BestFirst(grp, coordinatesArray, start, goal)
 end_time = time.time()
 print("Best First: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "BestFirst")
 
+######### EXECUCAO A* ##########
 start_time = time.time()
 final_path = aStar.aStrar(grp, coordinatesArray, start, goal)
 end_time = time.time()
 print("A*: ", end_time - start_time)
 if(Utils.checkPath(final_path)): Utils.drawGraph(grp, posDic, final_path, nodeQuantity, edgeQuantity, "AStar")
 
+######### EXECUCAO A ##########
 start_time = time.time()
 final_path = aCommon.aCommon(grp, start, goal)
 end_time = time.time()
